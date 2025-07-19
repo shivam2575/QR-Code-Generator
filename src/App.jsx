@@ -1,80 +1,106 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import "./App.css";
-import QRCodeStyling from "qr-code-styling";
-import QRBorderPlugin from "qr-border-plugin";
 
-const qrCode = new QRCodeStyling({
-  shape: "circle",
-  type: "svg",
-  width: 500,
-  height: 500,
-  // margin: 60,
-  data: "test",
-  image: "https://qr-code-styling.com/b9eac011a0558695563d6081a8395ccb.png",
-  dotsOptions: {
-    type: "dots",
-    color: "#000000",
-  },
-  backgroundOptions: {
-    round: 1,
-    color: "#D5B882",
-  },
-  cornersSquareOptions: {
-    type: "rounded",
-  },
-  cornersDotOptions: {
-    type: "rounded",
-  },
-  imageOptions: {
-    crossOrigin: "anonymous",
-    margin: 20,
-  },
-  plugins: [
-    QRBorderPlugin({
-      round: 1,
-      thickness: 20,
-      color: "#FF0000",
-    }),
-  ],
-});
+import QRcomponent from "./QRcomponent";
+import { BlockPicker } from "react-color";
+import { QROptions } from "./utils/QROptions";
+import QRCodeStyling from "qr-code-styling";
 
 function App() {
-  const [url, setUrl] = useState("https://example.com/");
-  const qrCodeRef = useRef(null);
-  useEffect(() => {
-    qrCode.append(qrCodeRef.current);
-  }, []);
-  useEffect(() => {
-    qrCode.update({
-      data: url,
-    });
-  }, [url]);
-  const onUrlChange = (e) => {
-    e.preventDefault();
-    setUrl(e.target.value);
+  const [content, setContent] = useState("https://example.com/");
+  const [bgColor, setBgColor] = useState("#D5B882");
+  const [shape, setShape] = useState("circle");
+  const [showPicker, setShowPicker] = useState(false);
+  const [qrConfig, setQrConfig] = useState({
+    ...QROptions,
+    shape,
+    data: content,
+    backgroundOptions: {
+      round: shape === "circle" ? 1 : 0,
+      color: bgColor,
+    },
+  });
+  const handelDownload = () => {
+    const qrCode = new QRCodeStyling(qrConfig);
+    qrCode.download({ name: "qr-code", extension: "png" });
   };
-  const handelClick = () => {
-    qrCode.download({
-      extension: "png",
+  const handleUpdate = () => {
+    if (!content.trim()) {
+      alert("please input data for QR code!!!");
+      return;
+    }
+    setQrConfig({
+      ...QROptions,
+      shape,
+      data: content,
+      backgroundOptions: {
+        round: shape === "circle" ? 1 : 0,
+        color: bgColor,
+      },
     });
   };
-  return (
-    <>
-      <h1>QR Code</h1>
-      <input
-        className="m-2 p-2 border rounded-lg"
-        value={url}
-        onChange={onUrlChange}
-      />
-      {/* <div className="border border-black rounded-full border-20">
-        <h1>SCAN ME</h1> */}
-      <div ref={qrCodeRef} />
-      {/* </div> */}
 
-      <button className="m-2 p-2 rounded-lg bg-gray-500" onClick={handelClick}>
-        Download
-      </button>
-    </>
+  return (
+    <div className="flex flex-col items-center">
+      <h1>QR Code Generator</h1>
+      <div className="flex justify-center">
+        <div className="flex flex-col m-2 p-2 items-center justify-center">
+          <label htmlFor="">Enter Content</label>
+          <input
+            className="m-2 p-2 border rounded-lg"
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+          />
+        </div>
+
+        <div className="blockpicker m-2 p-2">
+          <h6>Select Background Color</h6>
+          <div
+            onClick={() => setShowPicker(!showPicker)}
+            className="w-[100px] h-[50px] border-2 border-white"
+            style={{
+              backgroundColor: bgColor,
+            }}
+          ></div>
+          {showPicker && (
+            <BlockPicker
+              color={bgColor}
+              onChange={(color) => {
+                setBgColor(color.hex);
+              }}
+            />
+          )}
+        </div>
+
+        <div className="flex flex-col m-2 p-2">
+          <label>Shape</label>
+          <select
+            className="p-1 bg-gray-200 rounded-lg cursor-pointer"
+            onChange={(e) => setShape(e.target.value)}
+            value={shape}
+          >
+            <option value="circle">Circle</option>
+            <option value="square">Square</option>
+          </select>
+        </div>
+      </div>
+      <QRcomponent options={qrConfig} />
+      <div className="flex justify-center">
+        <button
+          className="m-2 p-2 rounded-lg bg-gray-500"
+          onClick={handleUpdate}
+        >
+          Create QR
+        </button>
+
+        <button
+          className="m-2 p-2 rounded-lg bg-gray-500"
+          onClick={handelDownload}
+        >
+          Download
+        </button>
+      </div>
+    </div>
   );
 }
 
