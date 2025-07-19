@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "./App.css";
 
-import QRcomponent from "./QRcomponent";
+import QRComponent from "./QRComponent";
 import { BlockPicker } from "react-color";
 import { QROptions } from "./utils/QROptions";
 import QRCodeStyling from "qr-code-styling";
@@ -84,7 +84,7 @@ function App() {
           </select>
         </div>
       </div>
-      <QRcomponent options={qrConfig} />
+      <QRComponent options={qrConfig} />
       <div className="flex justify-center">
         <button
           className="m-2 p-2 rounded-lg bg-gray-500"

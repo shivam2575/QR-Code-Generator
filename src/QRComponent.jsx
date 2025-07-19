@@ -1,6 +1,6 @@
 import QRCodeStyling from "qr-code-styling";
 import { useRef, useEffect } from "react";
-const QRcomponent = ({ options }) => {
+const QRComponent = ({ options }) => {
   const qrRef = useRef(null);
   const qrInstance = useRef(null);
   useEffect(() => {
@@ -14,4 +14,4 @@ const QRcomponent = ({ options }) => {
   return <div className="flex justify-center p-2 m-2" ref={qrRef} />;
 };
 
-export default QRcomponent;
+export default QRComponent;
