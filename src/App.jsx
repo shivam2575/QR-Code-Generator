@@ -18,6 +18,7 @@ function App() {
   const [shape, setShape] = useState("circle");
   const [showBgPicker, setShowBgPicker] = useState(false);
   const [showFgPicker, setShowFgPicker] = useState(false);
+  const [fileExt, setFileExt] = useState("png");
   const [qrConfig, setQrConfig] = useState({
     ...QROptions,
     shape,
@@ -29,7 +30,7 @@ function App() {
   });
   const handelDownload = () => {
     const qrCode = new QRCodeStyling(qrConfig);
-    qrCode.download({ name: "qr-code", extension: "png" });
+    qrCode.download({ name: "qr-code", extension: fileExt });
   };
   const handleUpdate = () => {
     if (!content.trim()) {
@@ -272,6 +273,17 @@ function App() {
             >
               Download
             </button>
+            <select
+              value={fileExt}
+              onChange={(e) => setFileExt(e.target.value)}
+              name="download-opt"
+              id="download-opt"
+              className="m-2 p-2 rounded-lg bg-gray-100 cursor-pointer hover:border hover:border-blue-300"
+            >
+              <option value="png">PNG</option>
+              <option value="svg">SVG</option>
+              <option value="jpeg">JPEG</option>
+            </select>
           </div>
         </div>
       </div>
