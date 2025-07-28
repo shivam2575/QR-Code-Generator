@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 
 import QRComponent from "./QRComponent";
@@ -32,11 +32,17 @@ function App() {
     const qrCode = new QRCodeStyling(qrConfig);
     qrCode.download({ name: "qr-code", extension: fileExt });
   };
-  const handleUpdate = () => {
-    if (!content.trim()) {
-      alert("please input data for QR code!!!");
-      return;
-    }
+  const getFile = (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setCustomLogo(reader.result);
+      setLogo(reader.result);
+    };
+    reader.readAsDataURL(file);
+  };
+  useEffect(() => {
     setQrConfig({
       ...QROptions,
       shape,
@@ -57,20 +63,10 @@ function App() {
         color: bgColor,
       },
     });
-  };
-  const getFile = (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setCustomLogo(reader.result);
-      setLogo(reader.result);
-    };
-    reader.readAsDataURL(file);
-  };
+  }, [content, fgColor, bgColor, body, eyeDot, eyeFrame, shape, logo]);
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center ">
       <h1>QR Code Generator</h1>
       <div id="body-container" className="body flex">
         <div id="input-container" className="flex flex-col items-start p-2">
@@ -257,16 +253,9 @@ function App() {
             </div>
           </div>
         </div>
-        <div className="qr-container">
+        <div className="qr-container sticky">
           <QRComponent options={qrConfig} />
           <div className="flex justify-center">
-            <button
-              className="m-2 p-2 rounded-lg bg-gray-500"
-              onClick={handleUpdate}
-            >
-              Create QR
-            </button>
-
             <button
               className="m-2 p-2 rounded-lg bg-gray-500"
               onClick={handelDownload}
